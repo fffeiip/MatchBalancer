@@ -1,0 +1,30 @@
+version: "3.7"
+services:
+  eureka:
+    image: springcloud/eureka
+    container_name: eureka
+    ports:
+      - "8761:8761"
+  aragorn:
+    container_name: aragorn
+    build:
+      context: ./aragorn
+      dockerfile: ./Dockerfile
+    restart: on-failure
+    command: [ "node", "server.js" ]
+    depends_on:
+      - eureka
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: eureka
+      # HOSTNAME: eureka
+  api-gateway:
+    container_name: gandalf
+    build:
+      context: ./api-gateway
+      dockerfile: ./Dockerfile
+    ports:
+      - "8050:8050"
+    depends_on:
+      - eureka
